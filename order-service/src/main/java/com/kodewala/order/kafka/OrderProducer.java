@@ -1,0 +1,56 @@
+package com.kodewala.order.kafka;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+
+import com.kodewala.order.dto.OrderEvent;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
+@Service
+public class OrderProducer {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(OrderProducer.class);
+
+    private final KafkaTemplate<String, OrderEvent> kafkaTemplate;
+
+    public OrderProducer(
+            KafkaTemplate<String, OrderEvent> kafkaTemplate) {
+
+        this.kafkaTemplate = kafkaTemplate;
+    }
+
+    @CircuitBreaker(
+            name = "kafkaProducer",
+            fallbackMethod = "kafkaFallback")
+    public void publish(OrderEvent event) throws Exception {
+
+        log.info(
+                "Publishing Order Event for orderId: {}",
+                event.getOrderId());
+
+        kafkaTemplate
+                .send("order-topic2", event)
+                .get();
+
+        log.info(
+                "Order Event Published Successfully for orderId: {}",
+                event.getOrderId());
+    }
+
+    public void kafkaFallback(
+            OrderEvent event,
+            Exception ex) {
+
+        log.error(
+                "Kafka unavailable. Event not published for orderId: {}",
+                event.getOrderId());
+
+        log.error(
+                "Reason: {}",
+                ex.getMessage());
+    }
+}

@@ -1,0 +1,157 @@
+package com.kodewala.order.service.impl;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.kodewala.order.dto.OrderEvent;
+import com.kodewala.order.dto.ProductDto;
+import com.kodewala.order.entity.Order;
+import com.kodewala.order.feign.PaymentClient;
+import com.kodewala.order.feign.ProductClient;
+import com.kodewala.order.kafka.OrderProducer;
+import com.kodewala.order.repository.OrderRepository;
+import com.kodewala.order.service.OrderService;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
+@Service
+public class OrderServiceImpl implements OrderService {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(OrderServiceImpl.class);
+
+    @Autowired
+    private OrderRepository repository;
+
+    @Autowired
+    private ProductClient productClient;
+
+    @Autowired
+    private PaymentClient paymentClient;
+
+    @Autowired
+    private OrderProducer orderProducer;
+
+    @Override
+    @CircuitBreaker(
+            name = "paymentService",
+            fallbackMethod = "paymentFallback")
+    public Order placeOrder(Order order) {
+
+        log.info(
+                "Starting order placement for productId: {} and quantity: {}",
+                order.getProductId(),
+                order.getQuantity());
+
+        // Product Service Call
+        ProductDto product =
+                productClient.getProduct(
+                        order.getProductId());
+
+        log.info(
+                "Received product details from Product Service: {}",
+                product);
+
+        if (product == null) {
+
+            log.error(
+                    "Product not found with id: {}",
+                    order.getProductId());
+
+            throw new RuntimeException(
+                    "Product Not Found");
+        }
+
+        // Calculate Amount
+        double total =
+                product.getPrice()
+                        * order.getQuantity();
+
+        order.setTotalAmount(total);
+
+        log.info(
+                "Calculated total amount: {}",
+                total);
+
+        order.setStatus("CREATED");
+
+        // Save Order
+        Order savedOrder =
+                repository.save(order);
+
+        log.info(
+                "Order saved successfully with id: {} and status: {}",
+                savedOrder.getId(),
+                savedOrder.getStatus());
+
+        // Payment Service Call
+        String paymentResponse =
+                paymentClient.payOrder(
+                        savedOrder.getId());
+
+        log.info(
+                "Payment Response : {}",
+                paymentResponse);
+
+        // Publish Event To Kafka
+        OrderEvent event =
+                new OrderEvent(
+                        savedOrder.getId(),
+                        savedOrder.getProductId(),
+                        savedOrder.getQuantity(),
+                        savedOrder.getStatus());
+
+        log.info(
+                "Publishing Order Event to Kafka for orderId: {}",
+                savedOrder.getId());
+
+        orderProducer.publish(event);
+
+        log.info(
+                "Order Event published successfully for orderId: {}",
+                savedOrder.getId());
+
+        return savedOrder;
+    }
+
+    // Fallback Method
+    public Order paymentFallback(
+            Order order,
+            Exception ex) {
+
+        log.error(
+                "Payment Service unavailable : {}",
+                ex.getMessage());
+
+        order.setStatus(
+                "PAYMENT_PENDING");
+
+        Order savedOrder =
+                repository.save(order);
+
+        log.info(
+                "Order saved with PAYMENT_PENDING status");
+
+        return savedOrder;
+    }
+
+    @Override
+    public List<Order> getOrders() {
+
+        log.info(
+                "Fetching all orders");
+
+        List<Order> orders =
+                repository.findAll();
+
+        log.info(
+                "Total orders found: {}",
+                orders.size());
+
+        return orders;
+    }
+}

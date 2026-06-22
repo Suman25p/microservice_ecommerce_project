@@ -1,0 +1,19 @@
+package com.kodewala.delivery.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import com.kodewala.delivery.entity.Delivery;
+import com.kodewala.delivery.repository.DeliveryRepository;
+
+public class DeliveryController {
+	@Autowired
+	private DeliveryRepository repository;
+
+    @GetMapping
+    public List<Delivery> getAll() {
+        return repository.findAll();
+    }
+}

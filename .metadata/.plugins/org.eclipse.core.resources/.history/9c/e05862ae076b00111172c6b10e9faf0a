@@ -1,0 +1,23 @@
+package com.kodewala.notification.kafka.consumer;
+
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Service;
+
+import com.kodewala.notification.dto.PaymentEvent;
+
+@Service
+public class PaymentConsumer {
+
+	@KafkaListener(
+            topics = "payment-success-topic",
+            groupId = "notification-group")
+    public void consume(PaymentEvent event) {
+
+        System.out.println("================================");
+        System.out.println("PAYMENT EVENT RECEIVED");
+        System.out.println("Order Id : " + event.getOrderId());
+        System.out.println("Status   : " + event.getStatus());
+        System.out.println("Sending Email Notification...");
+        System.out.println("================================");
+    }
+}

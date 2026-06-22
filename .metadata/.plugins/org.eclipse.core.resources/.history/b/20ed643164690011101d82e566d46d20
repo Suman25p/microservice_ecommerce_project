@@ -1,0 +1,5 @@
+package com.kodewala.cart.feign;
+
+public class ProductClient {
+
+}

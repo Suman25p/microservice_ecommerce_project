@@ -1,0 +1,37 @@
+package com.kodewala.payment.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.kodewala.payment.dto.PaymentEvent;
+import com.kodewala.payment.entity.Payment;
+import com.kodewala.payment.kafka.producer.PaymentProducer;
+import com.kodewala.payment.repository.PaymentRepository;
+
+@Service
+public class PaymentService {
+
+	@Autowired
+	private PaymentRepository repository;
+	@Autowired
+	private PaymentProducer producer;
+
+	public Payment pay(Payment payment){
+
+	    payment.setOrderId(null);   // force insert
+
+	    payment.setStatus("SUCCESS");
+
+	    Payment saved = repository.save(payment);
+
+	    producer.publish(
+	        new PaymentEvent(
+	            saved.getOrderId(),
+	            saved.getStatus()
+	        )
+	    );
+
+	    return saved;
+	}
+	}
+}

@@ -1,0 +1,32 @@
+package com.kodewala.cart.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kodewala.cart.entity.Cart;
+import com.kodewala.cart.service.CartService;
+@RestController
+@RequestMapping("/cart")
+public class CartController {
+	@Autowired
+	private CartService service;
+
+    @PostMapping("/add")
+    public Cart add(
+            @RequestBody Cart cart){
+
+        return service.addToCart(cart);
+    }
+
+    @GetMapping
+    public List<Cart> getAll(){
+
+        return service.getAll();
+    }
+}

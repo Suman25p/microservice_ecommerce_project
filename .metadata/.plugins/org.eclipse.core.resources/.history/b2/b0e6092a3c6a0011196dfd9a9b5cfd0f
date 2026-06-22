@@ -1,0 +1,15 @@
+package com.kodewala.cart.feign;
+
+import org.springframework.cloud.openfeign.FeignClient;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import com.kodewala.cart.feign.TracingFeignConfig;
+
+import com.kodewala.cart.dto.ProductDto;
+@FeignClient(name = "product-service", configuration = TracingFeignConfig.class)
+public interface ProductClient {
+	
+	@GetMapping("/products/{id}")
+    ProductDto getProduct(@PathVariable Long id);
+}

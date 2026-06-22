@@ -1,0 +1,5 @@
+package com.kodewala.delivery.controller;
+
+public class DeliveryController {
+
+}

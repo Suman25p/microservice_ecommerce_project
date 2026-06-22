@@ -1,0 +1,42 @@
+package com.kodewala.cart.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.kodewala.cart.dto.ProductDto;
+import com.kodewala.cart.entity.Cart;
+import com.kodewala.cart.feign.ProductClient;
+import com.kodewala.cart.repository.CartRepository;
+import com.kodewala.cart.service.CartService;
+
+@Service
+public class CartServiceImpl implements CartService{
+	
+	@Autowired
+	private CartRepository repository;
+	@Autowired
+    private ProductClient productClient;
+
+    @Override
+    public Cart addToCart(Cart cart) {
+
+        ProductDto product =
+                productClient.getProduct(
+                        cart.getProductId());
+
+        if(product == null){
+            throw new RuntimeException(
+                    "Product Not Found");
+        }
+
+        return repository.save(cart);
+    }
+
+    @Override
+    public List<Cart> getAll() {
+
+        return repository.findAll();
+    }
+}

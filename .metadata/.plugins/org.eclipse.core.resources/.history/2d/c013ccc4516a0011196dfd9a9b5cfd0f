@@ -1,0 +1,5 @@
+package com.kodewala.payment.kafka.consumer;
+
+public class OrderConsumer {
+
+}

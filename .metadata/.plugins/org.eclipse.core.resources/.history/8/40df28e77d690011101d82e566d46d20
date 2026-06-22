@@ -1,0 +1,34 @@
+package com.kodewala.delivery.consumer;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Service;
+
+import com.kodewala.delivery.entity.Delivery;
+import com.kodewala.delivery.event.PaymentEvent;
+import com.kodewala.delivery.repository.DeliveryRepository;
+
+@Service
+public class DeliveryConsumer {
+	@Autowired
+	private DeliveryRepository repository;
+
+    @KafkaListener(
+            topics = "payment-success-topic",
+            groupId = "delivery-group")
+    public void consume(PaymentEvent event) {
+
+        Delivery delivery = new Delivery();
+
+        delivery.setOrderId(
+                event.getOrderId());
+
+        delivery.setStatus("PACKED");
+
+        repository.save(delivery);
+
+        System.out.println(
+                "Delivery Created For Order : "
+                        + event.getOrderId());
+    }
+}

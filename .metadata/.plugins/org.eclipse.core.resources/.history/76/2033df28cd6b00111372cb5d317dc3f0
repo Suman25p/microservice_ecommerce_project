@@ -1,0 +1,5 @@
+package com.kodewala.order.feign;
+
+public interface PaymentClient {
+
+}

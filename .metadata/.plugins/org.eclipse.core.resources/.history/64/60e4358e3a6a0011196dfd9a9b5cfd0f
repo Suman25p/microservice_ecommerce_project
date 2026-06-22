@@ -1,0 +1,50 @@
+package com.kodewala.order.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.kodewala.order.dto.ProductDto;
+import com.kodewala.order.entity.Order;
+import com.kodewala.order.feign.ProductClient;
+import com.kodewala.order.repository.OrderRepository;
+import com.kodewala.order.service.OrderService;
+
+@Service
+public class OrderServiceImpl implements OrderService {
+	
+	@Autowired
+	private OrderRepository repository;
+	@Autowired
+    private ProductClient productClient;
+
+    @Override
+    public Order placeOrder(Order order) {
+
+        ProductDto product =
+                productClient.getProduct(
+                        order.getProductId());
+
+        if(product == null) {
+            throw new RuntimeException(
+                    "Product Not Found");
+        }
+
+        double total =
+                product.getPrice()
+                * order.getQuantity();
+
+        order.setTotalAmount(total);
+
+        order.setStatus("CREATED");
+
+        return repository.save(order);
+    }
+
+    @Override
+    public List<Order> getOrders() {
+
+        return repository.findAll();
+    }
+}

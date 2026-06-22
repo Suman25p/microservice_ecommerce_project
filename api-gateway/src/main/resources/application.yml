@@ -1,0 +1,61 @@
+server:
+  port: 8089
+
+spring:
+  application:
+    name: api-gateway
+
+  data:
+    redis:
+      host: subtle-lioness-128343.upstash.io
+      port: 6379
+      password: gQAAAAAAAfVXAAIgcDIwMDIyNDFjZjM3N2E0ZjBlYmFlNzVlNWJkMTg1NjRhYg
+      ssl:
+        enabled: true
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+
+            - id: product-service
+              uri: lb://PRODUCT-SERVICE
+              predicates:
+                - Path=/products/**
+
+            - id: cart-service
+              uri: lb://CART-SERVICE
+              predicates:
+                - Path=/cart/**
+
+            - id: order-service
+              uri: lb://ORDER-SERVICE
+              predicates:
+                - Path=/orders/**
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    key-resolver: "#{@userKeyResolver}"
+                    redis-rate-limiter.replenishRate: 10
+                    redis-rate-limiter.burstCapacity: 10
+
+            - id: payment-service
+              uri: lb://PAYMENT-SERVICE
+              predicates:
+                - Path=/payments/**
+
+            - id: notification-service
+              uri: lb://NOTIFICATION-SERVICE
+              predicates:
+                - Path=/notifications/**
+
+            - id: delivery-service
+              uri: lb://DELIVERY-SERVICE
+              predicates:
+                - Path=/delivery/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka

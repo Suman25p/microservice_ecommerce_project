@@ -1,0 +1,56 @@
+package com.kodewala.payment.controller;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kodewala.payment.entity.Payment;
+import com.kodewala.payment.service.PaymentService;
+
+@RestController
+@RequestMapping("/payments")
+public class PaymentController {
+
+    private static final Logger log =
+            LoggerFactory.getLogger(PaymentController.class);
+
+    @Autowired
+    private PaymentService service;
+
+    @PostMapping
+    public Payment pay(
+            @RequestBody Payment payment) {
+
+        log.info(
+                "Payment request received: {}",
+                payment);
+
+        Payment response =
+                service.pay(payment);
+
+        log.info(
+                "Payment processed successfully: {}",
+                response);
+
+        return response;
+    }
+
+    // For Circuit Breaker Demo
+    @GetMapping("/pay/{orderId}")
+    public String payOrder(
+            @PathVariable Long orderId) {
+
+        log.info(
+                "Payment request received for orderId: {}",
+                orderId);
+
+        return "Payment Success For Order : "
+                + orderId;
+    }
+}

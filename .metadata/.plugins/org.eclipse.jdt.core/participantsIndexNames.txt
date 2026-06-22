@@ -1,0 +1,13 @@
+INDEX VERSION 1.134
+G:\advance-java-practice\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\1360685291.index
+\Rapdio-Signup2\src\main\resources
+G:\advance-java-practice\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\4250679652.index
+\Rapdio-Signup\src\main\java
+G:\advance-java-practice\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\137630324.index
+\Spring-Web-MVC\src\main\java
+G:\advance-java-practice\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3135318346.index
+\Rapdio-Signup2\src\main\java
+G:\advance-java-practice\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\1519775707.index
+\Rapdio-Signup\src\main\java
+G:\advance-java-practice\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3436856467.index
+\Spring-Web-MVC\src\main\resources

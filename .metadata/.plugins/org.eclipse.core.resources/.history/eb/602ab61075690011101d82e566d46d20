@@ -1,0 +1,5 @@
+package com.kodewala.payment.config;
+
+public class KafkaProducerConfig {
+
+}
