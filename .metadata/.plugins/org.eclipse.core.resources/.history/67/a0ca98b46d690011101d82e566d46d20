@@ -1,5 +1,0 @@
-package com.kodewala.payment.dto;
-
-public class PaymentEvent {
-
-}
