@@ -1,0 +1,24 @@
+<------For creating image----->
+1)G:\advance-java-practice\eureka-server>docker build -t myapp:1.0 .
+
+<----To SEE docker image ----->
+2)G:\advance-java-practice\eureka-server>docker images
+
+<---To run application on 8761 localhost------->
+3)G:\advance-java-practice\eureka-server>docker run -d -p 8761:8761 --name myappcontainer myapp:1.0
+9df282c4f98473fa4e1c79cfc47f3980225330538478e7cb258c3b8865a72705
+
+4)G:\advance-java-practice\eureka-server>docker ps
+CONTAINER ID   IMAGE                              COMMAND                  CREATED          STATUS             PORTS                                         NAMES
+9df282c4f984   myapp:1.0                          "java -jar myapp.jar"    11 seconds ago   Up 10 seconds      0.0.0.0:8761->8761/tcp, [::]:8761->8761/tcp   myappcontainer
+161172c2c1ef   confluentinc/cp-kafka:7.5.0        "/etc/confluent/dock…"   6 weeks ago      Up 51 minutes      0.0.0.0:9092->9092/tcp, [::]:9092->9092/tcp   kafka
+2915aeeb71bf   confluentinc/cp-zookeeper:latest   "/etc/confluent/dock…"   6 weeks ago      Up About an hour   0.0.0.0:2181->2181/tcp, [::]:2181->2181/tcp   zookeeper
+
+
+<------To stop image container ------>
+5)G:\advance-java-practice\eureka-server>docker stop myappcontainer
+myappcontainer
+
+<-----To remove image container ------>
+G:\advance-java-practice\eureka-server>docker rm myappcontainer
+myappcontainer
