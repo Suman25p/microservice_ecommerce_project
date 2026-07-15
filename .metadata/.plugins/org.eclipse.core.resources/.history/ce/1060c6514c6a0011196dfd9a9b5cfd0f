@@ -1,5 +1,0 @@
-package com.kodewala.order.kafka;
-
-public class OrderProducer {
-
-}

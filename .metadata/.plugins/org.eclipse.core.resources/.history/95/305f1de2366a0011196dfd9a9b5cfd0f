@@ -1,5 +1,0 @@
-package com.kodewala.order.feign;
-
-public class TracingFeignConfig {
-
-}
